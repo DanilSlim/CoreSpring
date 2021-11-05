@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util" 
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+   
+   
+   <context:component-scan base-package="com.springinaction.springidol"></context:component-scan>
+    <!-- Позволяет работать с аннотациями, НО ТОЛЬКО ЕСЛИ БИНЫ УЖЕ ЗАРЕГИСТРИРОВАНЫ В КОНТЕКСТЕ -->
+    <!-- т.е. если бин не определен в xml конфиге то его аннотации и он сам обработан не будет
+    например если бин аннтирован @Component и не указан в xml конфиге, он не будет зарегистрирован в 
+    контексте -->
+	<context:annotation-config/>
+
+    <!-- bean definitions here -->
+    <bean id="duke" class="com.springinaction.springidol.Juggler">
+    	<constructor-arg value="15"/>
+    </bean>
+    <bean id="sonnet29" class="com.springinaction.springidol.Sonnet29"/>
+    <bean id="poeticDuke" class="com.springinaction.springidol.PoeticJuggler">
+      <constructor-arg value="15"/>
+      <constructor-arg ref="sonnet29"/>
+    </bean>
+    
+    <!-- Инициализация если нет конструктора через factory method -->
+    <bean id="theStage" class="com.springinaction.springidol.Stage" factory-method="getInstance" />
+    
+    <bean id="auditorium" class="com.springinaction.springidol.Auditorium" init-method="turnOnLights"
+           destroy-method="turnOnLights"/>
+           
+    <bean id="kenny" class="com.springinaction.springidol.Instrumentalist">
+		<property name="song" value="JingleBells"/>
+		<!--  <property name="instrument" ref="saxophone"/>-->
+		<!-- Сделаем с помощью аннотации -->
+		<!--  <property name="instrument" ref="piano"> </property>-->
+	</bean>
+	
+	<bean id="elvise" class="com.springinaction.springidol.Instrumentalist">
+		<property name="song" value="JingleBells-ElviseStyle"/>
+		<property name="instrument" ref="saxophone"/>
+	</bean>
+	
+	<bean id="saxophone" class="com.springinaction.springidol.Saxophone" autowire-candidate="false"/>
+	
+	<!-- Бин аннотирован @Component и сканируется автоматически -->
+	<!-- <bean id="piano" class="com.springinaction.springidol.Piano"></bean> -->
+	
+	<bean id="hank" class="com.springinaction.springidol.OneManBand">
+        <property name="instruments">
+         <list>
+	        <ref bean="guitar"/>
+	        <ref bean="cymbal"/>
+	        <ref bean="harmonica"/>
+        </list>
+        </property>
+</bean>
+    <bean id="guitar" class="com.springinaction.springidol.Guitar" ></bean>
+    <bean id="cymbal" class="com.springinaction.springidol.Cymbal" ></bean>
+    <bean id="harmonica" class="com.springinaction.springidol.Harmonica"></bean>
+    
+    <bean id="city" class="com.habuma.spel.cities.City"></bean>
+    
+    <util:list id="cities">
+		<bean class="com.habuma.spel.cities.City"
+		p:name="Chicago" p:state="IL" p:population="2853114"/>
+		
+		<bean class="com.habuma.spel.cities.City"
+		p:name="Atlanta" p:state="GA" p:population="537958"/>
+		
+		<bean class="com.habuma.spel.cities.City"
+		p:name="Dallas" p:state="TX" p:population="1279910"/>
+		
+		<bean class="com.habuma.spel.cities.City"
+		p:name="Houston" p:state="TX" p:population="2242193"/>
+		
+		<bean class="com.habuma.spel.cities.City"
+		p:name="Odessa" p:state="TX" p:population="90943"/>
+		
+		<bean class="com.habuma.spel.cities.City"
+		p:name="ElPaso" p:state="TX" p:population="613190"/>
+		
+		<bean class="com.habuma.spel.cities.City"
+		p:name="Jal" p:state="NM" p:population="1996"/>
+		
+		<bean class="com.habuma.spel.cities.City"
+		p:name="LasCruces" p:state="NM" p:population="91865"/>
+</util:list>
+
+<bean id="cityViewer" class="com.habuma.spel.cities.CityViewer">
+	<property name="cities" ref="cities"></property>
+	<property name="bigCities" value="#{cities.?[population gt 100000]}"></property>
+</bean>
+
+
+    	
+</beans>
